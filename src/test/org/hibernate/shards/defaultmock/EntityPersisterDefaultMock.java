@@ -21,8 +21,10 @@ package org.hibernate.shards.defaultmock;
 import org.hibernate.EntityMode;
 import org.hibernate.HibernateException;
 import org.hibernate.LockMode;
+import org.hibernate.LockOptions;
 import org.hibernate.MappingException;
 import org.hibernate.cache.CacheConcurrencyStrategy;
+import org.hibernate.cache.access.EntityRegionAccessStrategy;
 import org.hibernate.cache.entry.CacheEntryStructure;
 import org.hibernate.engine.CascadeStyle;
 import org.hibernate.engine.SessionFactoryImplementor;
@@ -440,4 +442,41 @@ public class EntityPersisterDefaultMock implements EntityPersister {
   public ValueInclusion[] getPropertyUpdateGenerationInclusions() {
     throw new UnsupportedOperationException();
   }
+
+	@Override
+	public EntityRegionAccessStrategy getCacheAccessStrategy() {
+	   throw new UnsupportedOperationException();
+	}
+
+    @Override
+    public Object load(Serializable id, Object optionalObject, LockOptions lockOptions, SessionImplementor session)
+            throws HibernateException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void lock(Serializable id, Object version, Object object, LockOptions lockOptions, SessionImplementor session)
+            throws HibernateException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Serializable getIdentifier(Object entity, SessionImplementor session) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setIdentifier(Object entity, Serializable id, SessionImplementor session) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Object instantiate(Serializable id, SessionImplementor session) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void resetIdentifier(Object entity, Serializable currentId, Object currentVersion, SessionImplementor session) {
+        throw new UnsupportedOperationException();
+    }
 }

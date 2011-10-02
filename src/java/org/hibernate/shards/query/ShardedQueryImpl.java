@@ -22,6 +22,7 @@ import org.hibernate.CacheMode;
 import org.hibernate.FlushMode;
 import org.hibernate.HibernateException;
 import org.hibernate.LockMode;
+import org.hibernate.LockOptions;
 import org.hibernate.Query;
 import org.hibernate.ScrollMode;
 import org.hibernate.ScrollableResults;
@@ -30,6 +31,7 @@ import org.hibernate.shards.ShardOperation;
 import org.hibernate.shards.strategy.access.ShardAccessStrategy;
 import org.hibernate.shards.strategy.exit.ConcatenateListsExitStrategy;
 import org.hibernate.shards.strategy.exit.FirstNonNullResultExitStrategy;
+import org.hibernate.shards.strategy.exit.FirstNonZeroResultExitStrategy;
 import org.hibernate.shards.util.Preconditions;
 import org.hibernate.transform.ResultTransformer;
 import org.hibernate.type.Type;
@@ -256,7 +258,26 @@ public class ShardedQueryImpl implements ShardedQuery {
    * @throws HibernateException
    */
   public int executeUpdate() throws HibernateException {
-    throw new UnsupportedOperationException();
+      ShardOperation<Integer> shardOp = new ShardOperation<Integer>() {
+          public Integer execute(Shard shard) {
+            shard.establishQuery(ShardedQueryImpl.this);
+            return Integer.valueOf(shard.executeUpdate(queryId));
+          }
+
+          public String getOperationName() {
+            return "executeUpdate()";
+          }
+        };
+       /**
+        * We don't support shard selection for HQL queries.  If you want
+        * custom shards, create a ShardedSession with only the shards you want.
+        */
+        return
+          shardAccessStrategy.apply(
+                  shards,
+                  shardOp,
+                  new FirstNonZeroResultExitStrategy<Integer>(),
+                  queryCollector);
   }
 
   public Query setMaxResults(int maxResults) {
@@ -1024,4 +1045,23 @@ public class ShardedQueryImpl implements ShardedQuery {
     }
     return this;
   }
+
+@Override
+public boolean isReadOnly() {
+    // TODO Auto-generated method stub
+    return false;
+}
+
+@Override
+public Query setLockOptions(final LockOptions lockOptions) {
+    QueryEvent event = new SetLockOptionsEvent(lockOptions);
+    for (Shard shard : shards) {
+      if (shard.getQueryById(queryId) != null) {
+        shard.getQueryById(queryId).setLockOptions(lockOptions);
+      } else {
+        shard.addQueryEvent(queryId, event);
+      }
+    }
+    return this;
+}
 }

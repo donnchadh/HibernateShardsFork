@@ -24,13 +24,18 @@ import org.hibernate.EntityMode;
 import org.hibernate.Filter;
 import org.hibernate.FlushMode;
 import org.hibernate.HibernateException;
+import org.hibernate.LobHelper;
 import org.hibernate.LockMode;
+import org.hibernate.LockOptions;
 import org.hibernate.Query;
 import org.hibernate.ReplicationMode;
 import org.hibernate.SQLQuery;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
+import org.hibernate.TypeHelper;
+import org.hibernate.UnknownProfileException;
 import org.hibernate.classic.Session;
+import org.hibernate.jdbc.Work;
 import org.hibernate.stat.SessionStatistics;
 import org.hibernate.type.Type;
 
@@ -498,4 +503,79 @@ public class SessionDefaultMock implements Session {
   public void reconnect(Connection connection) throws HibernateException {
     throw new UnsupportedOperationException();
   }
+
+  @Override
+  public void doWork(Work work) throws HibernateException {
+    throw new UnsupportedOperationException();
+  }
+
+@Override
+public boolean isDefaultReadOnly() {
+    throw new UnsupportedOperationException();
+}
+
+@Override
+public void setDefaultReadOnly(boolean readOnly) {
+    throw new UnsupportedOperationException();
+}
+
+@Override
+public Object load(Class theClass, Serializable id, LockOptions lockOptions) throws HibernateException {
+    throw new UnsupportedOperationException();
+}
+
+@Override
+public Object load(String entityName, Serializable id, LockOptions lockOptions) throws HibernateException {
+    throw new UnsupportedOperationException();
+}
+
+@Override
+public LockRequest buildLockRequest(LockOptions lockOptions) {
+    throw new UnsupportedOperationException();
+}
+
+@Override
+public void refresh(Object object, LockOptions lockOptions) throws HibernateException {
+    throw new UnsupportedOperationException();
+}
+
+@Override
+public Object get(Class clazz, Serializable id, LockOptions lockOptions) throws HibernateException {
+    throw new UnsupportedOperationException();
+}
+
+@Override
+public Object get(String entityName, Serializable id, LockOptions lockOptions) throws HibernateException {
+    throw new UnsupportedOperationException();
+}
+
+@Override
+public boolean isReadOnly(Object entityOrProxy) {
+    throw new UnsupportedOperationException();
+}
+
+@Override
+public boolean isFetchProfileEnabled(String name) throws UnknownProfileException {
+    throw new UnsupportedOperationException();
+}
+
+@Override
+public void enableFetchProfile(String name) throws UnknownProfileException {
+    throw new UnsupportedOperationException();
+}
+
+@Override
+public void disableFetchProfile(String name) throws UnknownProfileException {
+    throw new UnsupportedOperationException();
+}
+
+@Override
+public TypeHelper getTypeHelper() {
+    throw new UnsupportedOperationException();
+}
+
+@Override
+public LobHelper getLobHelper() {
+    throw new UnsupportedOperationException();
+}
 }

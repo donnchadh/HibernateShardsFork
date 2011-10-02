@@ -21,12 +21,18 @@ package org.hibernate.shards.id;
 import junit.framework.TestCase;
 import org.hibernate.HibernateException;
 import org.hibernate.Interceptor;
+import org.hibernate.LobHelper;
+import org.hibernate.LockOptions;
 import org.hibernate.Query;
 import org.hibernate.ScrollMode;
 import org.hibernate.ScrollableResults;
 import org.hibernate.Transaction;
+import org.hibernate.TypeHelper;
+import org.hibernate.UnknownProfileException;
 import org.hibernate.collection.PersistentCollection;
 import org.hibernate.engine.EntityKey;
+import org.hibernate.engine.LoadQueryInfluencers;
+import org.hibernate.engine.NonFlushedChanges;
 import org.hibernate.engine.PersistenceContext;
 import org.hibernate.engine.QueryParameters;
 import org.hibernate.engine.SessionFactoryImplementor;
@@ -269,5 +275,92 @@ public class ShardedTableHiLoGeneratorTest extends TestCase {
     public boolean isClosed() {
       throw new UnsupportedOperationException();
     }
+
+    @Override
+    public boolean isDefaultReadOnly() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setDefaultReadOnly(boolean readOnly) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Object load(Class theClass, Serializable id, LockOptions lockOptions) throws HibernateException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Object load(String entityName, Serializable id, LockOptions lockOptions) throws HibernateException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public LockRequest buildLockRequest(LockOptions lockOptions) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void refresh(Object object, LockOptions lockOptions) throws HibernateException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Object get(Class clazz, Serializable id, LockOptions lockOptions) throws HibernateException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Object get(String entityName, Serializable id, LockOptions lockOptions) throws HibernateException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean isReadOnly(Object entityOrProxy) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean isFetchProfileEnabled(String name) throws UnknownProfileException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void enableFetchProfile(String name) throws UnknownProfileException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void disableFetchProfile(String name) throws UnknownProfileException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public TypeHelper getTypeHelper() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public LobHelper getLobHelper() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public NonFlushedChanges getNonFlushedChanges() throws HibernateException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void applyNonFlushedChanges(NonFlushedChanges nonFlushedChanges) throws HibernateException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public LoadQueryInfluencers getLoadQueryInfluencers() {
+        throw new UnsupportedOperationException();
+    }
+
   }
+
 }

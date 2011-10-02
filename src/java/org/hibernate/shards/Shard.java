@@ -131,4 +131,7 @@ public interface Shard {
    * @see Query#uniqueResult()
    */
   Object uniqueResult(QueryId queryId);
+
+  int executeUpdate(QueryId queryId);
+  
 }

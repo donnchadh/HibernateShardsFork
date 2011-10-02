@@ -156,4 +156,19 @@ public class ClassMetadataDefaultMock implements ClassMetadata {
       throws HibernateException {
     throw new UnsupportedOperationException();
   }
+
+@Override
+public Object instantiate(Serializable id, SessionImplementor session) {
+    throw new UnsupportedOperationException();
+}
+
+@Override
+public Serializable getIdentifier(Object entity, SessionImplementor session) {
+    throw new UnsupportedOperationException();
+}
+
+@Override
+public void setIdentifier(Object entity, Serializable id, SessionImplementor session) {
+    throw new UnsupportedOperationException();
+}
 }

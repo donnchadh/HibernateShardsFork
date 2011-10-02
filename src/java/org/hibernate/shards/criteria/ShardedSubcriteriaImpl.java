@@ -428,4 +428,60 @@ class ShardedSubcriteriaImpl implements ShardedSubcriteria {
     void establishSubcriteria(Criteria parentCriteria, SubcriteriaFactory subcriteriaFactory);
 
   }
+
+@Override
+public Criteria createAlias(String associationPath, String alias, int joinType, Criterion withClause)
+        throws HibernateException {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException();
+//    CriteriaEvent event = new CreateAliasEvent(associationPath, alias);
+//    for (Shard shard : shards) {
+//      if (shardToCriteriaMap.get(shard) != null) {
+//        shardToCriteriaMap.get(shard).createAlias(associationPath, alias);
+//      } else {
+//        shardToEventListMap.get(shard).add(event);
+//      }
+//    }
+//    return this;
+}
+
+@Override
+public Criteria createCriteria(String associationPath, String alias, int joinType, Criterion withClause)
+        throws HibernateException {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException();
+//    SubcriteriaFactory factory = new SubcriteriaFactoryImpl(associationPath, alias, joinType);
+//    return createSubcriteria(factory, associationPath);
+}
+
+@Override
+public boolean isReadOnlyInitialized() {
+    Criteria someCriteria = getSomeSubcriteria();
+    if (someCriteria != null) {
+        return someCriteria.isReadOnlyInitialized();
+    } else {
+        return false;
+    }
+}
+
+@Override
+public boolean isReadOnly() {
+    Criteria someCriteria = getSomeSubcriteria();
+    if (someCriteria != null) {
+        return someCriteria.isReadOnly();
+    } else {
+        return false;
+    }
+}
+
+@Override
+public Criteria setReadOnly(boolean readOnly) {
+    // TODO
+    for (Shard shard : shards) {
+        if (shardToCriteriaMap.get(shard) != null) {
+          shardToCriteriaMap.get(shard).setReadOnly(readOnly);
+        }
+      }
+    return this;
+}
 }

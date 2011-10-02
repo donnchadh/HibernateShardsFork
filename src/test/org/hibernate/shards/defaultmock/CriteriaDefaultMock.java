@@ -153,4 +153,31 @@ public class CriteriaDefaultMock implements Criteria {
   public Object uniqueResult() throws HibernateException {
     throw new UnsupportedOperationException();
   }
+
+@Override
+public Criteria createAlias(String associationPath, String alias, int joinType, Criterion withClause)
+        throws HibernateException {
+    throw new UnsupportedOperationException();
+}
+
+@Override
+public Criteria createCriteria(String associationPath, String alias, int joinType, Criterion withClause)
+        throws HibernateException {
+    throw new UnsupportedOperationException();
+}
+
+@Override
+public boolean isReadOnlyInitialized() {
+    throw new UnsupportedOperationException();
+}
+
+@Override
+public boolean isReadOnly() {
+    throw new UnsupportedOperationException();
+}
+
+@Override
+public Criteria setReadOnly(boolean readOnly) {
+    throw new UnsupportedOperationException();
+}
 }

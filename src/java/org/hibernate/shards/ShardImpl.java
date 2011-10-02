@@ -265,6 +265,10 @@ public class ShardImpl implements Shard {
     return queryMap.get(queryId).uniqueResult();
   }
 
+  public int executeUpdate(QueryId queryId) {
+      return queryMap.get(queryId).executeUpdate();
+  }
+
   public Set<ShardId> getShardIds() {
     return shardIds;
   }

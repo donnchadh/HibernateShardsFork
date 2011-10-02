@@ -98,4 +98,9 @@ public class ShardDefaultMock implements Shard {
   public Object uniqueResult(QueryId queryId) {
     throw new UnsupportedOperationException();
   }
+
+  @Override
+  public int executeUpdate(QueryId queryId) {
+    throw new UnsupportedOperationException();
+  }
 }

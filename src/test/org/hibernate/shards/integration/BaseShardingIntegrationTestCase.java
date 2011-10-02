@@ -140,6 +140,7 @@ public abstract class BaseShardingIntegrationTestCase extends TestCase implement
     Configuration config = createPrototypeConfiguration();
     config.configure(BaseShardingIntegrationTestCase.class.getResource(dbPlatformConfigDirectory + "shard0.hibernate.cfg.xml"));
     config.addURL(BaseShardingIntegrationTestCase.class.getResource(dbPlatformConfigDirectory + idGenType.getMappingFile()));
+    config.buildMappings();
     return config;
   }
 

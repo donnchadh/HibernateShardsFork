@@ -29,6 +29,8 @@ import org.hibernate.ScrollableResults;
 import org.hibernate.Transaction;
 import org.hibernate.collection.PersistentCollection;
 import org.hibernate.engine.EntityKey;
+import org.hibernate.engine.LoadQueryInfluencers;
+import org.hibernate.engine.NonFlushedChanges;
 import org.hibernate.engine.PersistenceContext;
 import org.hibernate.engine.QueryParameters;
 import org.hibernate.engine.SessionFactoryImplementor;
@@ -282,4 +284,19 @@ public class SessionImplementorDefaultMock implements SessionImplementor {
   public boolean isClosed() {
     throw new UnsupportedOperationException();
   }
+
+@Override
+public NonFlushedChanges getNonFlushedChanges() throws HibernateException {
+    throw new UnsupportedOperationException();
+}
+
+@Override
+public void applyNonFlushedChanges(NonFlushedChanges nonFlushedChanges) throws HibernateException {
+    throw new UnsupportedOperationException();
+}
+
+@Override
+public LoadQueryInfluencers getLoadQueryInfluencers() {
+    throw new UnsupportedOperationException();
+}
 }

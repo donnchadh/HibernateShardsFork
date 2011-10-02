@@ -18,6 +18,15 @@
 
 package org.hibernate.shards.session;
 
+import java.io.Serializable;
+import java.sql.Connection;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.CacheMode;
@@ -27,18 +36,23 @@ import org.hibernate.Filter;
 import org.hibernate.FlushMode;
 import org.hibernate.HibernateException;
 import org.hibernate.Interceptor;
+import org.hibernate.LobHelper;
 import org.hibernate.LockMode;
+import org.hibernate.LockOptions;
 import org.hibernate.Query;
 import org.hibernate.ReplicationMode;
 import org.hibernate.SQLQuery;
 import org.hibernate.SessionException;
 import org.hibernate.Transaction;
 import org.hibernate.TransientObjectException;
+import org.hibernate.TypeHelper;
+import org.hibernate.UnknownProfileException;
 import org.hibernate.UnresolvableObjectException;
 import org.hibernate.classic.Session;
 import org.hibernate.engine.SessionFactoryImplementor;
 import org.hibernate.engine.SessionImplementor;
 import org.hibernate.id.IdentifierGenerator;
+import org.hibernate.jdbc.Work;
 import org.hibernate.metadata.ClassMetadata;
 import org.hibernate.proxy.HibernateProxy;
 import org.hibernate.shards.CrossShardAssociationException;
@@ -73,15 +87,6 @@ import org.hibernate.shards.util.Preconditions;
 import org.hibernate.shards.util.Sets;
 import org.hibernate.stat.SessionStatistics;
 import org.hibernate.type.Type;
-
-import java.io.Serializable;
-import java.sql.Connection;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * Concrete implementation of a ShardedSession, and also the central component of
@@ -1600,6 +1605,150 @@ public class ShardedSessionImpl implements ShardedSession, ShardedSessionImpleme
     return so.execute(shardToUse);
   }
 
+   @Override
+  public void doWork(Work work) throws HibernateException {
+   DoWorkEvent event = new DoWorkEvent(work);
+       for (Shard shard : shards) {
+         if (shard.getSession() != null) {
+           shard.getSession().doWork(work);
+         } else {
+           shard.addOpenSessionEvent(event);
+         }
+       }
+  }
 
+@Override
+public boolean isDefaultReadOnly() {
+    // TODO Auto-generated method stub
+    return false;
+}
+
+@Override
+public void setDefaultReadOnly(boolean readOnly) {
+    // TODO Auto-generated method stub
+    
+}
+
+@Override
+public Object load(final Class theClass, final Serializable id, final LockOptions lockOptions) throws HibernateException {
+    List<ShardId> shardIds = selectShardIdsFromShardResolutionStrategyData(new
+            ShardResolutionStrategyDataImpl(theClass, id));
+if (shardIds.size() == 1) {
+return shardIdsToShards.get(shardIds.get(0)).establishSession().load(theClass, id, lockOptions);
+} else {
+Object result = get(theClass, id, lockOptions);
+if (result == null) {
+shardedSessionFactory.getEntityNotFoundDelegate().handleEntityNotFound(theClass.getName(), id);
+}
+return result;
+}
+}
+
+@Override
+public Object load(final String entityName, final Serializable id, final LockOptions lockOptions) throws HibernateException {
+    List<ShardId> shardIds = selectShardIdsFromShardResolutionStrategyData(new
+            ShardResolutionStrategyDataImpl(entityName, id));
+if (shardIds.size() == 1) {
+return shardIdsToShards.get(shardIds.get(0)).establishSession().load(entityName, id, lockOptions);
+} else {
+Object result = get(entityName, id, lockOptions);
+if (result == null) {
+shardedSessionFactory.getEntityNotFoundDelegate().handleEntityNotFound(entityName, id);
+}
+return result;
+}
+}
+
+@Override
+public LockRequest buildLockRequest(LockOptions lockOptions) {
+    return getAnySession().buildLockRequest(lockOptions);
+}
+
+private Session getAnySession() {
+    return shards.get(0).getSession();
+}
+
+@Override
+public void refresh(final Object object, final LockOptions lockOptions) throws HibernateException {
+    RefreshOperation op = new RefreshOperation() {
+        public void refresh(Shard shard, Object object) {
+          shard.establishSession().refresh(object, lockOptions);
+        }
+      };
+      applyRefreshOperation(op, object);
+}
+
+@Override
+public Object get(final Class clazz, final Serializable id, final LockOptions lockOptions) throws HibernateException {
+    ShardOperation<Object> shardOp = new ShardOperation<Object>() {
+        public Object execute(Shard shard) {
+          return shard.establishSession().get(clazz, id, lockOptions);
+        }
+
+        public String getOperationName() {
+          return "get(Class class, Serializable id, LockMode lockMode)";
+        }
+      };
+      // we're not letting people customize shard selection by lockMode
+      return applyGetOperation(shardOp, new ShardResolutionStrategyDataImpl(clazz, id));
+}
+
+@Override
+public Object get(final String entityName, final Serializable id, final LockOptions lockOptions) throws HibernateException {
+    ShardOperation<Object> shardOp = new ShardOperation<Object>() {
+        public Object execute(Shard shard) {
+          return shard.establishSession().get(entityName, id, lockOptions);
+        }
+
+        public String getOperationName() {
+          return "get(String entityName, Serializable id, LockMode lockMode)";
+        }
+
+      };
+      // we're not letting people customize shard selection by lockMode
+      return applyGetOperation(shardOp, new ShardResolutionStrategyDataImpl(entityName, id));
+}
+
+@Override
+public boolean isReadOnly(Object entityOrProxy) {
+    ShardId shardId = getShardIdForObject(entityOrProxy);
+    if(shardId == null) {
+      shardId = selectShardIdForNewObject(entityOrProxy);
+    }
+    Preconditions.checkNotNull(shardId);
+    setCurrentSubgraphShardId(shardId);
+    return shardIdsToShards.get(shardId).establishSession().isReadOnly(entityOrProxy);
+}
+
+@Override
+public boolean isFetchProfileEnabled(String name) throws UnknownProfileException {
+    return getAnySession().isFetchProfileEnabled(name);
+}
+
+@Override
+public void enableFetchProfile(String name) throws UnknownProfileException {
+    for (Shard shard : shards) {
+        shard.getSession().enableFetchProfile(name);
+    }
+}
+
+@Override
+public void disableFetchProfile(String name) throws UnknownProfileException {
+    for (Shard shard : shards) {
+        shard.getSession().disableFetchProfile(name);
+    }
+}
+
+@Override
+public TypeHelper getTypeHelper() {
+    throw new UnsupportedOperationException();
+//    return getAnySession().getTypeHelper();
+}
+
+@Override
+public LobHelper getLobHelper() {
+    throw new UnsupportedOperationException();
+//    return getAnySession().getLobHelper();
+}
 
 }

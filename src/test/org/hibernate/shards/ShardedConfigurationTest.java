@@ -111,10 +111,10 @@ public class ShardedConfigurationTest extends TestCase {
   public void testRequiresShardLock() {
     Property property = new Property();
     assertFalse(shardedConfiguration.doesNotSupportTopLevelSave(property));
-    ManyToOne mto = new ManyToOne(new Table());
+    ManyToOne mto = new ManyToOne(null, new Table());
     property.setValue(mto);
     assertFalse(shardedConfiguration.doesNotSupportTopLevelSave(property));
-    OneToOne oto = new OneToOne(new Table(), new RootClass());
+    OneToOne oto = new OneToOne(null, new Table(), new RootClass());
     property.setValue(oto);
     assertTrue(shardedConfiguration.doesNotSupportTopLevelSave(property));
   }

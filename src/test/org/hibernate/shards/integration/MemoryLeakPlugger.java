@@ -30,6 +30,8 @@ import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
+import javassist.util.proxy.ProxyObject;
+
 /**
  * Summary of what I've learned.
  *
@@ -102,10 +104,14 @@ public class MemoryLeakPlugger {
        * class.
        */
       for(final Object obj : map.values()) {
+          if (obj instanceof ProxyObject) {
+//              ((ProxyObject)obj).setHandler(null);
+          } else {
         // get ahold of the method that we can use to set the callbacks
         Method setThreadCallbacks = obj.getClass().getDeclaredMethod("CGLIB$SET_THREAD_CALLBACKS", SET_THREAD_CALLBACKS_ARGS);
         // call the method, passing an array with 0 Callbacks
         setThreadCallbacks.invoke(null, ONE_CALLBACK_ARRAY);
+          }
       }
     } catch (Exception e) {
       throw new RuntimeException(e);

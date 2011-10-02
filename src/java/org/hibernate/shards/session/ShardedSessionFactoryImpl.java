@@ -26,8 +26,10 @@ import org.hibernate.Interceptor;
 import org.hibernate.MappingException;
 import org.hibernate.SessionFactory;
 import org.hibernate.StatelessSession;
+import org.hibernate.TypeHelper;
 import org.hibernate.cache.Cache;
 import org.hibernate.cache.QueryCache;
+import org.hibernate.cache.Region;
 import org.hibernate.cache.UpdateTimestampsCache;
 import org.hibernate.cfg.Settings;
 import org.hibernate.classic.Session;
@@ -40,9 +42,11 @@ import org.hibernate.engine.NamedSQLQueryDefinition;
 import org.hibernate.engine.ResultSetMappingDefinition;
 import org.hibernate.engine.SessionFactoryImplementor;
 import org.hibernate.engine.SessionImplementor;
+import org.hibernate.engine.profile.FetchProfile;
 import org.hibernate.engine.query.QueryPlanCache;
 import org.hibernate.exception.SQLExceptionConverter;
 import org.hibernate.id.IdentifierGenerator;
+import org.hibernate.id.factory.IdentifierGeneratorFactory;
 import org.hibernate.metadata.ClassMetadata;
 import org.hibernate.metadata.CollectionMetadata;
 import org.hibernate.persister.collection.CollectionPersister;
@@ -62,6 +66,7 @@ import org.hibernate.stat.Statistics;
 import org.hibernate.stat.StatisticsImpl;
 import org.hibernate.stat.StatisticsImplementor;
 import org.hibernate.type.Type;
+import org.hibernate.type.TypeResolver;
 
 import javax.naming.NamingException;
 import javax.naming.Reference;
@@ -71,6 +76,7 @@ import java.sql.Connection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 
 /**
@@ -599,7 +605,7 @@ public class ShardedSessionFactoryImpl implements ShardedSessionFactoryImplement
     return getAnyFactory().getResultSetMapping(name);
   }
 
-  public Cache getSecondLevelCacheRegion(String regionName) {
+  public Region getSecondLevelCacheRegion(String regionName) {
     // assumption is that all session factories are configured the same way,
     // so it doesn't matter which session factory answers this question
     return getAnyFactory().getSecondLevelCacheRegion(regionName);
@@ -676,5 +682,47 @@ public class ShardedSessionFactoryImpl implements ShardedSessionFactoryImplement
     // so it doesn't matter which session factory answers this question
     return getAnyFactory().getSqlFunctionRegistry();
   }
+
+@Override
+public org.hibernate.Cache getCache() {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException();
+}
+
+@Override
+public boolean containsFetchProfileDefinition(String name) {
+    // TODO Auto-generated method stub
+    return false;
+}
+
+@Override
+public TypeHelper getTypeHelper() {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException();
+}
+
+@Override
+public TypeResolver getTypeResolver() {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException();
+}
+
+@Override
+public Properties getProperties() {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException();
+}
+
+@Override
+public FetchProfile getFetchProfile(String name) {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException();
+}
+
+@Override
+public IdentifierGeneratorFactory getIdentifierGeneratorFactory() {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException();
+}
 }
 
